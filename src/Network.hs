@@ -20,11 +20,11 @@ import Pong
   The placeholder wire for the @'Scene'@.
 -}
 sceneWire :: Monad m => Wire s e m a Scene
-sceneWire = pure $ Scene { getLeftPaddle  = Paddle
+sceneWire = pure $ Scene { getLeftPaddle  = Paddle (pure 0) (pure 0)
                          , getLeftScore   = 0
-                         , getRightPaddle = Paddle
+                         , getRightPaddle = Paddle (pure 0) (pure 0)
                          , getRightScore  = 0
-                         , getBall        = Ball
+                         , getBall        = Ball (pure 0) 0
                          }
 
 {-|

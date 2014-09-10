@@ -4,6 +4,11 @@ module Pong ( Paddle (..)
             , renderScene
             ) where
 
+--------------------
+-- Global Imports --
+import Graphics.Rendering.OpenGL
+import Linear.V2
+
 ----------
 -- Code --
 
@@ -11,12 +16,12 @@ module Pong ( Paddle (..)
   The paddle datatypes. Stores the position and the size. The score is stored
   within the @'Scene'@ datatype.
 -}
-data Paddle = Paddle
+data Paddle = Paddle (V2 Float) (V2 Float)
 
 {-|
   The ball datatype, stores the position and the radius.
 -}
-data Ball = Ball
+data Ball = Ball (V2 Float) Float
 
 {-|
   The scene datatype contains all of the information for a given frame of the
@@ -30,10 +35,26 @@ data Scene = Scene { getLeftPaddle  :: Paddle
                    }
 
 {-|
+  Performing a vertex call on a @'V2'@ @'Float'@.
+-}
+linearVertex :: V2 Float -> IO ()
+linearVertex (V2 x y) =
+  vertex $ Vertex2 (realToFrac x :: GLfloat) (realToFrac y :: GLfloat)
+
+{-|
   Rendering a given @'Paddle'@.
 -}
 renderPaddle :: Paddle -> IO ()
-renderPaddle _ = return ()
+renderPaddle (Paddle pos size) =
+  renderPrimitive Quads $
+    mapM_ linearVertex $ generateVertecies pos size
+  where generateVertecies :: V2 Float -> V2 Float -> [V2 Float]
+        generateVertecies (V2 x y) (V2 w h) =
+          [ V2 (x    ) (y    )
+          , V2 (x + w) (y    )
+          , V2 (x + w) (y + h)
+          , V2 (x    ) (y + h)
+          ]
 
 {-|
   Rendering a given @'Ball'@.
