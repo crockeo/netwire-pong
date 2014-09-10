@@ -17,6 +17,17 @@ import Pong
 -- Code --
 
 {-|
+  The placeholder wire for the @'Scene'@.
+-}
+sceneWire :: Monad m => Wire s e m a Scene
+sceneWire = pure $ Scene { getLeftPaddle  = Paddle
+                         , getLeftScore   = 0
+                         , getRightPaddle = Paddle
+                         , getRightScore  = 0
+                         , getBall        = Ball
+                         }
+
+{-|
   The loop that really runs the network. Provides the input, and then renders
   the resulting @'Scene'@>
 -}
@@ -43,4 +54,4 @@ runNetwork' closedRef session wire = do
   by runNetwork'.
 -}
 runNetwork :: IORef Bool -> IO ()
-runNetwork closedRef = print "Nothing here yet."
+runNetwork closedRef = runNetwork' closedRef clockSession_ sceneWire
