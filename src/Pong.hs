@@ -17,11 +17,13 @@ import Linear.V2
   within the @'Scene'@ datatype.
 -}
 data Paddle = Paddle (V2 Float) (V2 Float)
+  deriving (Eq, Show, Read)
 
 {-|
   The ball datatype, stores the position and the radius.
 -}
 data Ball = Ball (V2 Float) Float
+  deriving (Eq, Show, Read)
 
 {-|
   The scene datatype contains all of the information for a given frame of the
@@ -33,6 +35,7 @@ data Scene = Scene { getLeftPaddle  :: Paddle
                    , getRightScore  :: Int
                    , getBall        :: Ball
                    }
+  deriving (Eq, Show, Read)
 
 {-|
   Performing a vertex call on a @'V2'@ @'Float'@.
