@@ -9,6 +9,7 @@ import Data.IORef
 -------------------
 -- Local Imports --
 import Network
+import Config
 
 ----------
 -- Code --
@@ -45,7 +46,7 @@ makeWindowSizeCallback s@(Size w' h') = do
 main :: IO ()
 main = do
   initialize
-  openWindow (Size 640 480) [DisplayRGBBits 8 8 8, DisplayAlphaBits 8, DisplayDepthBits 24] Window
+  openWindow (Size glWindowWidth glWindowHeight) [DisplayRGBBits 8 8 8, DisplayAlphaBits 8, DisplayDepthBits 24] Window
   windowTitle $= "netwire-pong"
 
   closedRef <- newIORef False
