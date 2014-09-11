@@ -15,30 +15,12 @@ import Debug.Trace
 
 -------------------
 -- Local Imports --
+import Config
 import Utils
 import Pong
 
 ----------
 -- Code --
-
-
-{-|
-  The speed of acceleration.
--}
-accelSpeed :: Float
-accelSpeed = 200
-
-{-|
-  The speed of deceleration.
--}
-decelSpeed :: Float
-decelSpeed = 400
-
-{-|
-  The minimum speed.
--}
-minSpeed :: Float
-minSpeed = 5
 
 {-|
   The acceleration of a given paddle.
