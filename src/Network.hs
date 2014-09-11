@@ -83,20 +83,20 @@ position = integral 0
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
   proc _ -> do
-    rec a1 <- acceleration (CharKey 'Q') (CharKey 'A') -< v1
+    rec a1 <- acceleration (CharKey 'W') (CharKey 'S') -< v1
         v1 <- velocity -< a1
         p1 <- position -< v1
 
-        a2 <- acceleration (CharKey 'W') (CharKey 'S') -< v2
+        a2 <- acceleration (UP         ) (DOWN       ) -< v2
         v2 <- velocity -< a2
         p2 <- position -< v2
 
     returnA -< makeScene (p1, p2)
   where makeScene :: (Float, Float) -> Scene
         makeScene (p1, p2) =
-          Scene { getLeftPaddle  = Paddle (V2 0 p1) (V2 5 20)
+          Scene { getLeftPaddle  = Paddle (V2 (-90) p1) (V2 5 20)
                 , getLeftScore   = 0
-                , getRightPaddle = Paddle (V2 0 p2) (V2 5 20)
+                , getRightPaddle = Paddle (V2 ( 85) p2) (V2 5 20)
                 , getRightScore  = 0
                 , getBall        = Ball (pure 0) 0
                 }
