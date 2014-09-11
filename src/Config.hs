@@ -7,6 +7,7 @@ module Config where
 -------------------
 -- Global Config --
 import Graphics.Rendering.OpenGL
+import Graphics.UI.GLFW
 
 ----------
 -- Code --
@@ -52,3 +53,27 @@ decelSpeed = 400
 -}
 minSpeed :: Float
 minSpeed = 5
+
+{-|
+  The key for going up on the left paddle.
+-}
+leftUpKey :: Key
+leftUpKey = CharKey 'W'
+
+{-|
+  The key for going down on the left paddle.
+-}
+leftDownKey :: Key
+leftDownKey = CharKey 'S'
+
+{-|
+  The key for going up on the right paddle.
+-}
+rightUpKey :: Key
+rightUpKey = SpecialKey UP
+
+{-|
+  The key for going down on the right paddle.
+-}
+rightDownKey :: Key
+rightDownKey = SpecialKey DOWN
