@@ -38,7 +38,7 @@ decelSpeed = 400
   The minimum speed.
 -}
 minSpeed :: Float
-minSpeed = 1
+minSpeed = 5
 
 {-|
   The acceleration of a given paddle.
