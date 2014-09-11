@@ -7,57 +7,17 @@ import Graphics.Rendering.OpenGL hiding (position)
 import Graphics.UI.GLFW as GLFW
 import Prelude hiding ((.))
 import Control.Wire
-import FRP.Netwire
 import Data.IORef
 import Linear.V2
 
-import Debug.Trace
-
 -------------------
 -- Local Imports --
+import Paddle
 import Config
-import Utils
 import Pong
 
 ----------
 -- Code --
-
-{-|
-  The acceleration of a given paddle.
--}
-acceleration :: (Enum k, Monoid e) => k -> k -> Wire s e IO Float Float
-acceleration upKey downKey =  mkSF_ decel                 . isKeyDown upKey . isKeyDown downKey
-                          <|> mkSF_ (accel ( accelSpeed)) . isKeyDown upKey
-                          <|> mkSF_ (accel (-accelSpeed)) . isKeyDown downKey
-                          <|> mkSF_ decel
-  where decel :: Float -> Float
-        decel v
-          | v <  0 = ( decelSpeed)
-          | v >  0 = (-decelSpeed)
-          | v == 0 = 0
-
-        accel :: Float -> Float -> Float
-        accel s v
-          | signum s == signum v = s
-          | otherwise            = s + (signum s * decelSpeed)
-
-{-|
-  The velocity of a given paddle.
--}
-velocity :: (HasTime t s, Monad m) => Wire s e m Float Float
-velocity =
-  mkSF_ stop . integral 0
-  where stop :: Float -> Float
-        stop v
-          | v > (-minSpeed)
-         && v < ( minSpeed) = 0
-          | otherwise = v
-
-{-|
-  The position of a given paddle.
--}
-position :: HasTime t s => Wire s e m Float Float
-position = integral 0
 
 {-|
   The wire that constructs the scene.
@@ -65,13 +25,8 @@ position = integral 0
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
   proc _ -> do
-    rec a1 <- acceleration (CharKey 'W') (CharKey 'S') -< v1
-        v1 <- velocity -< a1
-        p1 <- position -< v1
-
-        a2 <- acceleration (UP         ) (DOWN       ) -< v2
-        v2 <- velocity -< a2
-        p2 <- position -< v2
+    p1 <- paddlePosition leftUpKey leftDownKey   -< undefined
+    p2 <- paddlePosition rightUpKey rightDownKey -< undefined
 
     returnA -< makeScene (p1, p2)
   where makeScene :: (Float, Float) -> Scene
