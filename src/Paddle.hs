@@ -59,8 +59,8 @@ stop v
 -}
 clamp :: (Float, V2 Float) -> (Float, Bool)
 clamp (p, (V2 _ h))
-  | ctop      = ( h - 1 - paddleHeight, True)
-  | cbot      = (-h + 1              , True)
+  | ctop      = ( h - paddleHeight, True)
+  | cbot      = (-h               , True)
   | otherwise = ( p               , False)
   where ctop = p + paddleHeight > ( h)
         cbot = p                < (-h)
