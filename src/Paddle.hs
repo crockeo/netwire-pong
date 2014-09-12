@@ -11,6 +11,7 @@ module Paddle (paddlePosition) where
 import Prelude hiding ((.))
 import Control.Wire
 import FRP.Netwire
+import Linear.V2
 
 -------------------
 -- Local Imports --
@@ -32,18 +33,26 @@ decel v =
 accel :: Float -> Float -> Float
 accel speed v =
   if signum speed /= signum v
-    then speed + decelSpeed * signum speed
+    then decelSpeed * signum speed
     else speed
 
 {-|
-  Getting the current acceleration of a paddle based on the two inputs (k1, and
-  k2) that are held down.
+  Bouncing the paddle off of the top of the screen.
 -}
-acceleration :: (Enum k, Monoid e) => k -> k -> Wire s e IO Float Float
-acceleration k1 k2  =  mkSF_  decel                . isKeyDown k1 . isKeyDown k2
-                   <|> mkSF_ (accel ( accelSpeed)) . isKeyDown k1
-                   <|> mkSF_ (accel (-accelSpeed)) . isKeyDown k2
-                   <|> mkSF_  decel
+bounce :: Bool -> Float -> Float
+bounce b v =
+  if b
+    then (-v / 2)
+    else ( v)
+
+{-|
+  Applying the max speed onto a paddle.
+-}
+applyMax :: Float -> Float
+applyMax v
+  | v > ( maxSpeed) = ( maxSpeed)
+  | v < (-maxSpeed) = (-maxSpeed)
+  | otherwise       = v
 
 {-|
   Pushing the velocity to 0 if the velocity is small enough.
@@ -54,10 +63,46 @@ stop v
   | otherwise                          = v
 
 {-|
+  Checking if the paddle is above or below the screen bounds.
+-}
+clamp :: (Float, V2 Float) -> (Float, Bool)
+clamp (p, (V2 _ h))
+  | ctop      = ( h - 1 - paddleHeight, True)
+  | cbot      = (-h + 1              , True)
+  | otherwise = ( p               , False)
+  where ctop = p + paddleHeight > ( h)
+        cbot = p                < (-h)
+
+{-|
+  Getting the current acceleration of a paddle based on the two inputs (k1, and
+  k2) that are held down.
+-}
+acceleration :: (Enum k, Monoid e) => k -> k -> Wire s e IO Float Float
+acceleration k1 k2  =  mkSF_  decel                . isKeyDown k1 . isKeyDown k2
+                   <|> pure ( accelSpeed) . isKeyDown k1 -- mkSF_ (accel ( accelSpeed)) . isKeyDown k1
+                   <|> pure (-accelSpeed) . isKeyDown k2 -- mkSF_ (accel (-accelSpeed)) . isKeyDown k2
+                   <|> mkSF_  decel
+
+{-|
   Getting the current velocity of a paddle.
 -}
-velocity :: (HasTime t s, Monoid e) => Wire s e IO Float Float
-velocity = mkSF_ stop . integral 0
+velocity :: HasTime t s => Wire s e IO (Float, Bool) Float
+velocity = integralWith (\b -> bounce b . applyMax . stop) 0
+
+{-|
+  Getting the current position of the paddle. It also returns a bool
+  representing whether or not the paddle should bounce off of the top/bot of
+  the screen.
+-}
+position :: HasTime t s => Wire s e IO Float (Float, Bool)
+position =
+  position' 0 . liftA2 (,) (mkId) (renderSize)
+  where position' :: HasTime t s => Float -> Wire s e IO (Float, V2 Float) (Float, Bool)
+        position' x' =
+          mkPure $ \ds (v, s) ->
+            let dt = realToFrac $ dtime ds
+                x  = clamp (x' + v * dt, s) in
+              (Right x, position' $ fst x)
 
 {-|
   Getting the paddle position.
@@ -65,8 +110,8 @@ velocity = mkSF_ stop . integral 0
 paddlePosition :: (Enum k, HasTime t s, Monoid e) => k -> k -> Wire s e IO a Float
 paddlePosition k1 k2 =
   proc _ -> do
-    rec a <- acceleration k1 k2 -< v
-        v <- velocity           -< a
-        p <- integral 0         -< v
+    rec a        <- acceleration k1 k2 -< v
+        v        <- velocity           -< (a, col)
+        (p, col) <- position           -< v
 
     returnA -< p
