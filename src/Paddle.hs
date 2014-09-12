@@ -29,15 +29,6 @@ decel v =
     else v - (decelSpeed * signum v)
 
 {-|
-  A helper function to make applying acceleration to a paddle work smoother.
--}
-accel :: Float -> Float -> Float
-accel speed v =
-  if signum speed /= signum v
-    then decelSpeed * signum speed
-    else speed
-
-{-|
   Bouncing the paddle off of the top of the screen.
 -}
 bounce :: Bool -> Float -> Float
@@ -106,10 +97,10 @@ position =
               (Right x, position' $ fst x)
 
 {-|
-  Getting the paddle position.
+  Wrapping everything up to produce the position.
 -}
-paddlePosition :: (Enum k, HasTime t s, Monoid e) => k -> k -> Wire s e IO a Float
-paddlePosition k1 k2 =
+wrap :: (Enum k, HasTime t s, Monoid e) => k -> k -> Wire s e IO a Float
+wrap k1 k2 =
   proc _ -> do
     rec a        <- acceleration k1 k2 -< v
         v        <- velocity           -< (a, col)
@@ -122,6 +113,6 @@ paddlePosition k1 k2 =
 -}
 paddle :: (Enum k, HasTime t s, Monoid e) => k -> k -> Float -> Wire s e IO a Paddle
 paddle k1 k2 x =
-  fmap constructPaddle $ paddlePosition k1 k2
+  fmap constructPaddle $ wrap k1 k2
   where constructPaddle :: Float -> Paddle
         constructPaddle y = Paddle (V2 x y) (V2 paddleWidth paddleHeight)
