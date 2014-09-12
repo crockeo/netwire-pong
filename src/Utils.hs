@@ -20,13 +20,13 @@ import Linear.V2
   It should be noted that the origin of the window (0, 0) is at the bottom
   left. So:
 
-  (0, h)            (w, h)
+  (-w,  h)            (w,  h)
      +-----------------+
      |                 |
      |                 |
      |                 |
      +-----------------+
-  (0, 0)            (w, 0)
+  (-w, -h)            (w, -h)
 -}
 renderSize :: Wire s e IO a (V2 Float)
 renderSize =
