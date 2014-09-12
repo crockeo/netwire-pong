@@ -6,7 +6,6 @@ import Graphics.Rendering.OpenGL
 import Graphics.UI.GLFW as GLFW
 import Prelude hiding ((.))
 import Control.Wire
-import FRP.Netwire
 import Linear.V2
 
 ----------
