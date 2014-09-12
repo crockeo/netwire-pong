@@ -46,7 +46,7 @@ accelSpeed = 200
   The speed of deceleration of a given paddle.
 -}
 decelSpeed :: Float
-decelSpeed = 400
+decelSpeed = 100
 
 {-|
   The minimum speed of a given paddle.
