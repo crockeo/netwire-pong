@@ -13,6 +13,7 @@ import Data.IORef
 -- Local Imports --
 import Paddle
 import Config
+import Ball
 import Pong
 
 ----------
@@ -23,15 +24,16 @@ import Pong
 -}
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
-  liftA2 makeScene (paddle  leftUpKey  leftDownKey (-90))
-                   (paddle rightUpKey rightDownKey ( 85))
-  where makeScene :: Paddle -> Paddle -> Scene
-        makeScene p1 p2 =
+  pure makeScene <*> (paddle  leftUpKey  leftDownKey (-90))
+                 <*> (paddle rightUpKey rightDownKey ( 85))
+                 <*> (ball 3)
+  where makeScene :: Paddle -> Paddle -> Ball -> Scene
+        makeScene p1 p2 b =
           Scene { getLeftPaddle  = p1
                 , getLeftScore   = 0
                 , getRightPaddle = p2
                 , getRightScore  = 0
-                , getBall        = Ball (pure 0) 0
+                , getBall        = b
                 }
 
 {-|
