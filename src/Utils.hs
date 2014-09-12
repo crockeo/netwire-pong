@@ -34,7 +34,8 @@ renderSize =
     liftA (Right . makeVector) $ get windowSize
   where makeVector :: Size -> V2 Float
         makeVector (Size w h) =
-          V2 (fromIntegral w) (fromIntegral h)
+          V2 ((fromIntegral w / 640) * 100)
+             ((fromIntegral h / 640) * 100)
 
 {-|
   Checking if the user has pressed a key down. Blocks when released, produces

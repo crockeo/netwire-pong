@@ -37,6 +37,18 @@ glWindowHeight :: GLsizei
 glWindowHeight = fromIntegral windowHeight
 
 {-|
+  The paddle width.
+-}
+paddleWidth :: Float
+paddleWidth = 5
+
+{-|
+  The paddle height.
+-}
+paddleHeight :: Float
+paddleHeight = 20
+
+{-|
   The speed of acceleration of a given paddle.
 -}
 accelSpeed :: Float
@@ -53,6 +65,12 @@ decelSpeed = 100
 -}
 minSpeed :: Float
 minSpeed = 5
+
+{-|
+  The maximum speed of a given paddle.
+-}
+maxSpeed :: Float
+maxSpeed = 400
 
 {-|
   The key for going up on the left paddle.
