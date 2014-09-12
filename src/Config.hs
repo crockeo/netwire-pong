@@ -95,3 +95,11 @@ rightUpKey = SpecialKey UP
 -}
 rightDownKey :: Key
 rightDownKey = SpecialKey DOWN
+
+{-|
+  The render detail of the ball. The higher the value, the more triangle fans
+  are rendered to complete the circle. A minimum value of 4 (I think) is
+  required.
+-}
+renderDetail :: Int
+renderDetail = 10
