@@ -8,7 +8,6 @@ import Graphics.UI.GLFW as GLFW
 import Prelude hiding ((.))
 import Control.Wire
 import Data.IORef
-import Linear.V2
 
 -------------------
 -- Local Imports --
@@ -24,16 +23,13 @@ import Pong
 -}
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
-  proc _ -> do
-    p1 <- paddlePosition leftUpKey leftDownKey   -< undefined
-    p2 <- paddlePosition rightUpKey rightDownKey -< undefined
-
-    returnA -< makeScene (p1, p2)
-  where makeScene :: (Float, Float) -> Scene
-        makeScene (p1, p2) =
-          Scene { getLeftPaddle  = Paddle (V2 (-90) p1) (V2 5 20)
+  liftA2 makeScene (paddle  leftUpKey  leftDownKey (-90))
+                   (paddle rightUpKey rightDownKey ( 85))
+  where makeScene :: Paddle -> Paddle -> Scene
+        makeScene p1 p2 =
+          Scene { getLeftPaddle  = p1
                 , getLeftScore   = 0
-                , getRightPaddle = Paddle (V2 ( 85) p2) (V2 5 20)
+                , getRightPaddle = p2
                 , getRightScore  = 0
                 , getBall        = Ball (pure 0) 0
                 }

@@ -4,7 +4,7 @@
 -}
 
 {-# LANGUAGE Arrows #-}
-module Paddle (paddlePosition) where
+module Paddle (paddle) where
 
 --------------------
 -- Global Imports --
@@ -17,6 +17,7 @@ import Linear.V2
 -- Local Imports --
 import Config
 import Utils
+import Pong
 
 {-|
   Applying deceleration to a paddle.
@@ -115,3 +116,12 @@ paddlePosition k1 k2 =
         (p, col) <- position           -< v
 
     returnA -< p
+
+{-|
+  Constructing the paddle.
+-}
+paddle :: (Enum k, HasTime t s, Monoid e) => k -> k -> Float -> Wire s e IO a Paddle
+paddle k1 k2 x =
+  fmap constructPaddle $ paddlePosition k1 k2
+  where constructPaddle :: Float -> Paddle
+        constructPaddle y = Paddle (V2 x y) (V2 paddleWidth paddleHeight)
