@@ -9,6 +9,10 @@ module Pong ( Paddle (..)
 import Graphics.Rendering.OpenGL
 import Linear.V2
 
+-------------------
+-- Local Imports --
+import Config
+
 ----------
 -- Code --
 
@@ -60,10 +64,24 @@ renderPaddle (Paddle pos size) =
           ]
 
 {-|
+  Rendering a given score on a given side.
+-}
+renderScore :: Int -> Either () () -> IO ()
+renderScore _ _ = return ()
+
+{-|
   Rendering a given @'Ball'@.
 -}
 renderBall :: Ball -> IO ()
-renderBall _ = return ()
+renderBall (Ball pos r) =
+  renderPrimitive TriangleFan $
+    mapM_ linearVertex $ pos : generateVertecies 0
+  where generateVertecies :: Float -> [V2 Float]
+        generateVertecies radians
+          | radians > 360 = []
+          | otherwise     = generateVertex : generateVertecies (radians + (2 * pi / renderDetail))
+          where generateVertex :: V2 Float
+                generateVertex = pos + (V2 r r) * V2 (sin radians) (cos radians)
 
 {-|
   Rendering a given scene. This includes rendering both @'Paddle'@, the
@@ -72,9 +90,9 @@ renderBall _ = return ()
 renderScene :: Scene -> IO ()
 renderScene scene = do
   renderPaddle $ getLeftPaddle scene
-  -- renderScore
+  renderScore (getLeftScore scene) (Left ())
 
   renderPaddle $ getRightPaddle scene
-  -- renderScore
+  renderScore (getRightScore scene) (Right ())
 
   renderBall $ getBall scene

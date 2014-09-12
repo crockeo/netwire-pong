@@ -101,5 +101,5 @@ rightDownKey = SpecialKey DOWN
   are rendered to complete the circle. A minimum value of 4 (I think) is
   required.
 -}
-renderDetail :: Int
-renderDetail = 10
+renderDetail :: Float
+renderDetail = 8
