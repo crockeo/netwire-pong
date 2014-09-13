@@ -52,7 +52,7 @@ paddleHeight = paddleWidth * 4
   The margin of the paddle from the edge of the screen.
 -}
 paddleMargin :: Float
-paddleMargin = paddleWidth * 2
+paddleMargin = -(paddleWidth / 2)
 
 {-|
   The speed of acceleration of a given paddle.
@@ -120,4 +120,4 @@ renderDetail = 8
   The speed in which the ball should travel.
 -}
 ballSpeed :: Float
-ballSpeed = 40
+ballSpeed = 70
