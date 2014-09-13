@@ -13,7 +13,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 executable netwire-pong
-  ghc-options:         -Wall -fno-warn-unused-do-bind
+  ghc-options:         -O2 -Wall -fno-warn-unused-do-bind
 
   main-is:             Main.hs
 
