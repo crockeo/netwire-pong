@@ -24,9 +24,12 @@ import Pong
 -}
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
-  pure makeScene <*> (paddle  leftUpKey  leftDownKey $ Left  ())
-                 <*> (paddle rightUpKey rightDownKey $ Right ())
-                 <*> (ball ballRadius)
+  proc _ -> do
+    lpaddle <- paddle  leftUpKey  leftDownKey $ Left  () -< undefined
+    rpaddle <- paddle rightUpKey rightDownKey $ Right () -< undefined
+    ball    <- ball ballRadius                           -< (lpaddle, rpaddle)
+
+    returnA -< makeScene lpaddle rpaddle ball
   where makeScene :: Paddle -> Paddle -> Ball -> Scene
         makeScene p1 p2 b =
           Scene { getLeftPaddle  = p1
