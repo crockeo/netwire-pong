@@ -17,6 +17,9 @@ import Linear.V2
 -}
 data CollisionRectangle = CollisionRectangle (V2 Float) (V2 Float)
 
+instance Collidable CollisionRectangle where
+  collisionRectangle cr = cr
+
 {-|
   Getting the location of the edges of a CollisionRectangle.
 -}
