@@ -11,6 +11,7 @@ import Linear.V2
 
 -------------------
 -- Local Imports --
+import Collision
 import Config
 
 ----------
@@ -23,11 +24,19 @@ import Config
 data Paddle = Paddle (V2 Float) (V2 Float)
   deriving (Eq, Show, Read)
 
+instance Collidable Paddle where
+  collisionRectangle (Paddle pos size) = CollisionRectangle pos size
+
 {-|
   The ball datatype, stores the position and the radius.
 -}
 data Ball = Ball (V2 Float) Float
   deriving (Eq, Show, Read)
+
+instance Collidable Ball where
+  collisionRectangle (Ball (V2 x y) r) =
+    CollisionRectangle (V2 (x - r) (y - r))
+                       (V2 (x + r) (y + r))
 
 {-|
   The scene datatype contains all of the information for a given frame of the
