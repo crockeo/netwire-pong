@@ -119,8 +119,8 @@ onSide :: Either () () -> Wire s e IO a Float
 onSide side =
   mkSF_ (onSide' side) . renderSize
   where onSide' :: Either () () -> V2 Float -> Float
-        onSide' (Left  _) (V2 w _) = (-w) + 10
-        onSide' (Right _) (V2 w _) = ( w) - 10 - paddleWidth
+        onSide' (Left  _) (V2 w _) = (-w) + paddleMargin
+        onSide' (Right _) (V2 w _) = ( w) - paddleMargin - paddleWidth
 
 {-|
   Constructing the paddle.
