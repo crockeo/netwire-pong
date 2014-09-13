@@ -36,7 +36,7 @@ data Ball = Ball (V2 Float) Float
 instance Collidable Ball where
   collisionRectangle (Ball (V2 x y) r) =
     CollisionRectangle (V2 (x - r) (y - r))
-                       (V2 (x + r) (y + r))
+                       (V2 (r * 2) (r * 2))
 
 {-|
   The scene datatype contains all of the information for a given frame of the
