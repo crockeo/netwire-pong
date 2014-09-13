@@ -26,7 +26,7 @@ sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
   pure makeScene <*> (paddle  leftUpKey  leftDownKey $ Left  ())
                  <*> (paddle rightUpKey rightDownKey $ Right ())
-                 <*> (ball 3)
+                 <*> (ball ballRadius)
   where makeScene :: Paddle -> Paddle -> Ball -> Scene
         makeScene p1 p2 b =
           Scene { getLeftPaddle  = p1

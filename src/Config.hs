@@ -103,9 +103,21 @@ rightDownKey :: Key
 rightDownKey = SpecialKey DOWN
 
 {-|
+  The radius of the ball.
+-}
+ballRadius :: Float
+ballRadius = 3
+
+{-|
   The render detail of the ball. The higher the value, the more triangle fans
   are rendered to complete the circle. A minimum value of 4 (I think) is
   required.
 -}
 renderDetail :: Float
 renderDetail = 8
+
+{-|
+  The speed in which the ball should travel.
+-}
+ballSpeed :: Float
+ballSpeed = 40
