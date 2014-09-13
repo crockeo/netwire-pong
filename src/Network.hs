@@ -24,8 +24,8 @@ import Pong
 -}
 sceneWire :: HasTime t s => Wire s () IO a Scene
 sceneWire =
-  pure makeScene <*> (paddle  leftUpKey  leftDownKey (-90))
-                 <*> (paddle rightUpKey rightDownKey ( 85))
+  pure makeScene <*> (paddle  leftUpKey  leftDownKey $ Left  ())
+                 <*> (paddle rightUpKey rightDownKey $ Right ())
                  <*> (ball 3)
   where makeScene :: Paddle -> Paddle -> Ball -> Scene
         makeScene p1 p2 b =

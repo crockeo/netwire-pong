@@ -46,7 +46,13 @@ paddleWidth = 5
   The paddle height.
 -}
 paddleHeight :: Float
-paddleHeight = 20
+paddleHeight = paddleWidth * 4
+
+{-|
+  The margin of the paddle from the edge of the screen.
+-}
+paddleMargin :: Float
+paddleMargin = paddleWidth * 2
 
 {-|
   The speed of acceleration of a given paddle.

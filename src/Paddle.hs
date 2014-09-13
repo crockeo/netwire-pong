@@ -66,6 +66,10 @@ clamp (p, (V2 _ h))
         cbot = p                < (-h)
 
 {-|
+
+-}
+
+{-|
   Getting the current acceleration of a paddle based on the two inputs (k1, and
   k2) that are held down.
 -}
@@ -88,7 +92,7 @@ velocity = integralWith (\b -> bounce b . applyMax . stop) 0
 -}
 position :: HasTime t s => Wire s e IO Float (Float, Bool)
 position =
-  position' 0 . liftA2 (,) (mkId) (renderSize)
+  position' (-paddleHeight / 2) . liftA2 (,) (mkId) (renderSize)
   where position' :: HasTime t s => Float -> Wire s e IO (Float, V2 Float) (Float, Bool)
         position' x' =
           mkPure $ \ds (v, s) ->
@@ -109,10 +113,20 @@ wrap k1 k2 =
     returnA -< p
 
 {-|
+  The side in which the paddle should take.
+-}
+onSide :: Either () () -> Wire s e IO a Float
+onSide side =
+  mkSF_ (onSide' side) . renderSize
+  where onSide' :: Either () () -> V2 Float -> Float
+        onSide' (Left  _) (V2 w _) = (-w) + 10
+        onSide' (Right _) (V2 w _) = ( w) - 10 - paddleWidth
+
+{-|
   Constructing the paddle.
 -}
-paddle :: (Enum k, HasTime t s, Monoid e) => k -> k -> Float -> Wire s e IO a Paddle
-paddle k1 k2 x =
-  fmap constructPaddle $ wrap k1 k2
-  where constructPaddle :: Float -> Paddle
-        constructPaddle y = Paddle (V2 x y) (V2 paddleWidth paddleHeight)
+paddle :: (Enum k, HasTime t s, Monoid e) => k -> k -> Either () () -> Wire s e IO a Paddle
+paddle k1 k2 side =
+  pure constructPaddle <*> onSide side <*> wrap k1 k2
+  where constructPaddle :: Float -> Float -> Paddle
+        constructPaddle x y = Paddle (V2 x y) (V2 paddleWidth paddleHeight)
