@@ -95,10 +95,10 @@ position =
   position' (-paddleHeight / 2) . liftA2 (,) (mkId) (renderSize)
   where position' :: HasTime t s => Float -> Wire s e IO (Float, V2 Float) (Float, Bool)
         position' x' =
-          mkPure $ \ds (v, s) ->
+          mkSF $ \ds (v, s) ->
             let dt = realToFrac $ dtime ds
                 x  = clamp (x' + v * dt, s) in
-              (Right x, position' $ fst x)
+              (x, position' $ fst x)
 
 {-|
   Wrapping everything up to produce the position.
