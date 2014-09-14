@@ -75,8 +75,17 @@ renderPaddle (Paddle pos size) =
 {-|
   Rendering a given score on a given side.
 -}
+renderScore' :: Float -> Float -> IO ()
+renderScore' score y =
+  renderPrimitive Quads $
+    mapM_ linearVertex $ [ V2 0     y
+                         , V2 score y
+                         , V2 score (y + 5)
+                         , V2 0     (y + 5)
+                         ]
 renderScore :: Int -> Either () () -> IO ()
-renderScore _ _ = return ()
+renderScore score (Left  ()) = renderScore' (fromIntegral score) ( 40)
+renderScore score (Right ()) = renderScore' (fromIntegral score) (-40)
 
 {-|
   Rendering a given @'Ball'@.
