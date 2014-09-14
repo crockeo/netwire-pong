@@ -8,6 +8,7 @@ import Graphics.UI.GLFW as GLFW
 import Prelude hiding ((.))
 import Control.Wire
 import Data.IORef
+import Linear.V2
 
 -------------------
 -- Local Imports --
@@ -20,6 +21,17 @@ import Pong
 -- Code --
 
 {-|
+  Calculating the score.
+-}
+score :: V2 Int -> Wire s e IO (V2 Bool) (V2 Int)
+score s =
+  mkSFN $ \ss ->
+    let s' = addIf s ss in
+      (s, score s')
+  where addIf :: V2 Int -> V2 Bool -> V2 Int
+        addIf s' b = s' + fmap (\x -> if x then 1 else 0) b
+
+{-|
   The wire that constructs the scene.
 -}
 sceneWire :: HasTime t s => Wire s () IO a Scene
@@ -27,15 +39,16 @@ sceneWire =
   proc _ -> do
     lpaddle <- paddle  leftUpKey  leftDownKey $ Left  () -< undefined
     rpaddle <- paddle rightUpKey rightDownKey $ Right () -< undefined
-    ball    <- ball ballRadius                           -< (lpaddle, rpaddle)
+    (b, s)  <- ball ballRadius                           -< (lpaddle, rpaddle)
+    s'      <- score (V2 0 0)                            -< s
 
-    returnA -< makeScene lpaddle rpaddle ball
-  where makeScene :: Paddle -> Paddle -> Ball -> Scene
-        makeScene p1 p2 b =
+    returnA -< makeScene lpaddle rpaddle b s'
+  where makeScene :: Paddle -> Paddle -> Ball -> V2 Int -> Scene
+        makeScene p1 p2 b (V2 sl sr) =
           Scene { getLeftPaddle  = p1
-                , getLeftScore   = 0
+                , getLeftScore   = sl
                 , getRightPaddle = p2
-                , getRightScore  = 0
+                , getRightScore  = sr
                 , getBall        = b
                 }
 
