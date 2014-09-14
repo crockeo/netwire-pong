@@ -26,7 +26,7 @@ import Pong
   Determining whether or not the ball should bounce off of an edge.
 -}
 bounce :: V2 Float -> V2 Float -> Paddle -> Paddle -> (V2 Float, V2 Bool, V2 Bool)
-bounce p@(V2 x y) (V2 w h) p1@(Paddle (V2 bx1 _) (V2 bw1 _)) p2@(Paddle (V2 bx2 _) (V2 bw2 _))
+bounce p@(V2 x y) (V2 w h) p1@(Paddle (V2 bx1 _) (V2 bw1 _)) p2@(Paddle (V2 bx2 _) (V2 _ _))
   | collides (Ball p ballRadius) p1 = (V2 (bx1 + bw1 + ballRadius) y, V2 True  False, V2 False False)
   | collides (Ball p ballRadius) p2 = (V2 (bx2       - ballRadius) y, V2 True  False, V2 False False)
   | x - ballRadius < (-w)           = (V2 (-w + ballRadius) y       , V2 True  False, V2 False True )
