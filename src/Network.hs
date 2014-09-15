@@ -12,8 +12,10 @@ import Linear.V2
 
 -------------------
 -- Local Imports --
+import Renderable
 import Paddle
 import Config
+import Delay
 import Ball
 import Pong
 
@@ -34,7 +36,7 @@ score s =
 {-|
   The wire that constructs the scene.
 -}
-sceneWire :: HasTime t s => Wire s () IO a Scene
+sceneWire :: HasTime t s => Wire s () IO a Renderable
 sceneWire =
   proc _ -> do
     lpaddle <- paddle  leftUpKey  leftDownKey $ Left  () -< undefined
@@ -42,7 +44,7 @@ sceneWire =
     (b, s)  <- ball ballRadius                           -< (lpaddle, rpaddle)
     s'      <- score (V2 0 0)                            -< s
 
-    returnA -< makeScene lpaddle rpaddle b s'
+    returnA -< Renderable $ makeScene lpaddle rpaddle b s'
   where makeScene :: Paddle -> Paddle -> Ball -> V2 Int -> Scene
         makeScene p1 p2 b (V2 sl sr) =
           Scene { getLeftPaddle  = p1
@@ -53,10 +55,16 @@ sceneWire =
                 }
 
 {-|
+  The final wire, wrapping everthing up.
+-}
+finalWire :: HasTime t s => Wire s () IO a Renderable
+finalWire  =  delayStart startDelay --> sceneWire
+
+{-|
   The loop that really runs the network. Provides the input, and then renders
   the resulting @'Scene'@>
 -}
-runNetwork' :: HasTime t s => IORef Bool -> Session IO s -> Wire s () IO a Scene -> IO ()
+runNetwork' :: HasTime t s => IORef Bool -> Session IO s -> Wire s () IO a Renderable -> IO ()
 runNetwork' closedRef session wire = do
   closed <- readIORef closedRef
   if closed
@@ -69,7 +77,7 @@ runNetwork' closedRef session wire = do
         Left _ -> return ()
         Right scene -> do
           clear [ColorBuffer]
-          renderScene scene
+          render scene
           swapBuffers
 
           runNetwork' closedRef session' wire'
@@ -79,4 +87,4 @@ runNetwork' closedRef session wire = do
   by runNetwork'.
 -}
 runNetwork :: IORef Bool -> IO ()
-runNetwork closedRef = runNetwork' closedRef clockSession_ sceneWire
+runNetwork closedRef = runNetwork' closedRef clockSession_ finalWire

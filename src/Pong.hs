@@ -11,6 +11,7 @@ import Linear.V2
 
 -------------------
 -- Local Imports --
+import Renderable
 import Collision
 import Config
 import Utils
@@ -50,24 +51,6 @@ data Scene = Scene { getLeftPaddle  :: Paddle
                    , getBall        :: Ball
                    }
   deriving (Eq, Show, Read)
-
-{-|
-  Performing a vertex call on a @'V2'@ @'Float'@.
--}
-linearVertex :: V2 Float -> IO ()
-linearVertex (V2 x y) =
-  vertex $ Vertex2 (realToFrac x :: GLfloat) (realToFrac y :: GLfloat)
-
-{-|
-  Generating a list of vertecies for a rectangle from a position and a size.
--}
-generateVertecies :: V2 Float -> V2 Float -> [V2 Float]
-generateVertecies (V2 x y) (V2 w h) =
-  [ V2 (x    ) (y    )
-  , V2 (x + w) (y    )
-  , V2 (x + w) (y + h)
-  , V2 (x    ) (y + h)
-  ]
 
 {-|
   Rendering a given @'Paddle'@.
@@ -134,3 +117,9 @@ renderScene scene = do
   color $ Color3 (1 :: GLfloat) (1 :: GLfloat) (0.3 :: GLfloat)
   renderScore (fromIntegral $  getLeftScore scene) (Left  ()) r
   renderScore (fromIntegral $ getRightScore scene) (Right ()) r
+
+{-|
+  The @'Renderable''@ instance for @'Scene'@.
+-}
+instance Renderable' Scene where
+  render = renderScene

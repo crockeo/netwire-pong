@@ -13,6 +13,12 @@ import Graphics.UI.GLFW
 -- Code --
 
 {-|
+  The delay before the game starts.
+-}
+startDelay :: Float
+startDelay = 3
+
+{-|
   The width of the window.
 -}
 windowWidth :: Int
@@ -140,3 +146,9 @@ verticalScoreMargin = 20
 -}
 scoreHeight :: Float
 scoreHeight = 5
+
+{-|
+  The multiplyer of the size for the start delay.
+-}
+waitSize :: Float
+waitSize = 10
