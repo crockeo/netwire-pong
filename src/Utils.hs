@@ -12,6 +12,18 @@ import Linear.V2
 -- Code --
 
 {-|
+  The non-rendering version of the @'renderSize'@ function. Used in the
+  @'renderSize'@ function.
+-}
+renderSize' :: IO (V2 Float)
+renderSize' =
+  liftA makeVector $ get windowSize
+  where makeVector :: Size -> V2 Float
+        makeVector (Size w h) =
+          V2 ((fromIntegral w / 640) * 100)
+             ((fromIntegral h / 640) * 100)
+
+{-|
   The current render size of the window. Useful, in this case, for checking if
   the ball should bounce off of the top or bottom. Or even to see if the
   paddles should be bounded off the top/bottom. Or to see if the ball has
@@ -29,13 +41,7 @@ import Linear.V2
   (-w, -h)            (w, -h)
 -}
 renderSize :: Wire s e IO a (V2 Float)
-renderSize =
-  mkGen_ $ \_ ->
-    liftA (Right . makeVector) $ get windowSize
-  where makeVector :: Size -> V2 Float
-        makeVector (Size w h) =
-          V2 ((fromIntegral w / 640) * 100)
-             ((fromIntegral h / 640) * 100)
+renderSize = mkGen_ $ \_ -> liftA Right renderSize'
 
 {-|
   Checking if the user has pressed a key down. Blocks when released, produces
