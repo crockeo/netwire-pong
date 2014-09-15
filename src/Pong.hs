@@ -13,6 +13,7 @@ import Linear.V2
 -- Local Imports --
 import Collision
 import Config
+import Utils
 
 ----------
 -- Code --
@@ -58,34 +59,23 @@ linearVertex (V2 x y) =
   vertex $ Vertex2 (realToFrac x :: GLfloat) (realToFrac y :: GLfloat)
 
 {-|
+  Generating a list of vertecies for a rectangle from a position and a size.
+-}
+generateVertecies :: V2 Float -> V2 Float -> [V2 Float]
+generateVertecies (V2 x y) (V2 w h) =
+  [ V2 (x    ) (y    )
+  , V2 (x + w) (y    )
+  , V2 (x + w) (y + h)
+  , V2 (x    ) (y + h)
+  ]
+
+{-|
   Rendering a given @'Paddle'@.
 -}
 renderPaddle :: Paddle -> IO ()
 renderPaddle (Paddle pos size) =
   renderPrimitive Quads $
     mapM_ linearVertex $ generateVertecies pos size
-  where generateVertecies :: V2 Float -> V2 Float -> [V2 Float]
-        generateVertecies (V2 x y) (V2 w h) =
-          [ V2 (x    ) (y    )
-          , V2 (x + w) (y    )
-          , V2 (x + w) (y + h)
-          , V2 (x    ) (y + h)
-          ]
-
-{-|
-  Rendering a given score on a given side.
--}
-renderScore' :: Float -> Float -> IO ()
-renderScore' score y =
-  renderPrimitive Quads $
-    mapM_ linearVertex $ [ V2 0     y
-                         , V2 score y
-                         , V2 score (y + 5)
-                         , V2 0     (y + 5)
-                         ]
-renderScore :: Int -> Either () () -> IO ()
-renderScore score (Left  ()) = renderScore' (fromIntegral score) ( 40)
-renderScore score (Right ()) = renderScore' (fromIntegral score) (-40)
 
 {-|
   Rendering a given @'Ball'@.
@@ -93,13 +83,37 @@ renderScore score (Right ()) = renderScore' (fromIntegral score) (-40)
 renderBall :: Ball -> IO ()
 renderBall (Ball pos r) =
   renderPrimitive TriangleFan $
-    mapM_ linearVertex $ pos : generateVertecies 0
-  where generateVertecies :: Float -> [V2 Float]
-        generateVertecies radians
+    mapM_ linearVertex $ pos : gvs 0
+  where gvs :: Float -> [V2 Float]
+        gvs radians
           | radians > 360 = []
-          | otherwise     = generateVertex : generateVertecies (radians + (2 * pi / renderDetail))
+          | otherwise     = generateVertex : gvs (radians + (2 * pi / renderDetail))
           where generateVertex :: V2 Float
                 generateVertex = pos + (V2 r r) * V2 (sin radians) (cos radians)
+
+{-|
+  Rendering a line down the middle of the screen.
+-}
+renderCenter :: V2 Float -> IO ()
+renderCenter (V2 _ h) = do
+  renderPrimitive Lines $ do
+    vertex $ Vertex2 (0 :: GLfloat) (realToFrac ( h) :: GLfloat)
+    vertex $ Vertex2 (0 :: GLfloat) (realToFrac (-h) :: GLfloat)
+
+{-|
+  Rendering a given score on a given side.
+-}
+renderScore :: Float -> Either () () -> V2 Float -> IO ()
+renderScore score side (V2 w h) =
+  renderPrimitive Quads $
+    mapM_ linearVertex $
+      case side of
+        Left  () ->
+          generateVertecies (V2 (-w + horizontalScoreMargin) (h - verticalScoreMargin))
+                            (V2 score scoreHeight)
+        Right () ->
+          generateVertecies (V2 ( w - horizontalScoreMargin - score) (h - verticalScoreMargin))
+                            (V2 score scoreHeight)
 
 {-|
   Rendering a given scene. This includes rendering both @'Paddle'@, the
@@ -107,10 +121,16 @@ renderBall (Ball pos r) =
 -}
 renderScene :: Scene -> IO ()
 renderScene scene = do
+  r <- renderSize'
+
+  color $ Color3 (0.5 :: GLfloat) (0.5 :: GLfloat) (0.5 :: GLfloat)
+  renderCenter r
+
+  color $ Color3 (1 :: GLfloat) (1 :: GLfloat) (1 :: GLfloat)
   renderPaddle $ getLeftPaddle scene
-  renderScore (getLeftScore scene) (Left ())
-
   renderPaddle $ getRightPaddle scene
-  renderScore (getRightScore scene) (Right ())
-
   renderBall $ getBall scene
+
+  color $ Color3 (1 :: GLfloat) (1 :: GLfloat) (0.3 :: GLfloat)
+  renderScore (fromIntegral $  getLeftScore scene) (Left  ()) r
+  renderScore (fromIntegral $ getRightScore scene) (Right ()) r

@@ -121,3 +121,22 @@ renderDetail = 8
 -}
 ballSpeed :: Float
 ballSpeed = 70
+
+{-|
+  The horizontal text margin (from the left and right of the screen -- left for
+  the left paddle, right for the right).
+-}
+horizontalScoreMargin :: Float
+horizontalScoreMargin = 10
+
+{-|
+  The vertical text margin (from the top of the screen).
+-}
+verticalScoreMargin :: Float
+verticalScoreMargin = 20
+
+{-|
+  The height of the block that displays the score.
+-}
+scoreHeight :: Float
+scoreHeight = 5
